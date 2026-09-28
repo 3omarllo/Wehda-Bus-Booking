@@ -1,6 +1,6 @@
-# [Project name]
+# Wehda Bus Booking
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+Arabic RTL bus booking for affordable intercity trips between Cairo and Alexandria, with customer booking and staff operations screens.
 
 ## Run & Operate
 
@@ -21,24 +21,27 @@ _Replace the heading above with the project's name, and this line with one sente
 - Build: esbuild (CJS bundle)
 
 ## Where things live
-
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/wehda-bus-booking/src/App.tsx` — customer and staff routes plus booking interactions.
+- `artifacts/wehda-bus-booking/src/index.css` — brand theme, responsive layout, Arabic typography, and seat states.
+- `artifacts/api-server/src/routes/` — trips, seat map, booking, payment review, and dashboard endpoints.
+- `artifacts/api-server/src/lib/booking-data.ts` — seeded demo data and API response mapping.
+- `lib/db/src/schema/booking.ts` — PostgreSQL schema for trips and bookings.
+- `lib/api-spec/openapi.yaml` — source of truth for generated API hooks and Zod validation.
 
 ## Architecture decisions
-
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- The uploaded logo is bundled unchanged and used as the visual anchor for the customer and staff surfaces.
+- The first release uses manual Vodafone Cash/InstaPay review while keeping payment state behind typed API endpoints.
+- Seat state is calculated from active booking rows so the customer map and staff operations screens share one source of truth.
 
 ## Product
-
-_Describe the high-level user-facing capabilities of this app once they exist._
+Customers can search Cairo/Alexandria trips, view live seat states, hold seats, enter pickup and passenger details, submit a manual payment reference, and receive a boarding-pass ticket. Staff can view dashboard metrics, booking queues, payment review actions, and the daily trips board.
 
 ## User preferences
-
-_Populate as you build — explicit user instructions worth remembering across sessions._
+The whole customer interface is Arabic and RTL. Keep the orange / sky-blue / ink palette and logo-led sticker feel when extending the app.
 
 ## Gotchas
-
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- `pnpm --filter @workspace/wehda-bus-booking run build` needs `PORT` and `BASE_PATH` when run outside the managed workflow.
+- After changing the OpenAPI contract, run `pnpm --filter @workspace/api-spec run codegen` before typechecking the API or frontend.
 
 ## Pointers
 

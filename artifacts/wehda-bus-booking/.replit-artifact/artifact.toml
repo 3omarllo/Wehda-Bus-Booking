@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Wehda Bus Booking"
+description = "Arabic RTL bus booking web app for affordable intercity trips between Cairo and Alexandria, with customer booking flows and a staff operations portal."
+version = "1.0.0"
+id = "artifacts/wehda-bus-booking"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 25122
+
+[services.development]
+run = "pnpm --filter @workspace/wehda-bus-booking run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/wehda-bus-booking", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/wehda-bus-booking/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25122"
+BASE_PATH = "/"

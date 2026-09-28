@@ -1,0 +1,76 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap');
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@plugin "@tailwindcss/typography";
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: hsl(var(--background)); --color-foreground: hsl(var(--foreground));
+  --color-border: hsl(var(--border)); --color-input: hsl(var(--input)); --color-ring: hsl(var(--ring));
+  --color-card: hsl(var(--card)); --color-card-foreground: hsl(var(--card-foreground)); --color-card-border: hsl(var(--card-border));
+  --color-popover: hsl(var(--popover)); --color-popover-foreground: hsl(var(--popover-foreground)); --color-popover-border: hsl(var(--popover-border));
+  --color-primary: hsl(var(--primary)); --color-primary-foreground: hsl(var(--primary-foreground)); --color-primary-border: hsl(var(--primary));
+  --color-secondary: hsl(var(--secondary)); --color-secondary-foreground: hsl(var(--secondary-foreground)); --color-secondary-border: hsl(var(--secondary));
+  --color-muted: hsl(var(--muted)); --color-muted-foreground: hsl(var(--muted-foreground)); --color-muted-border: hsl(var(--muted));
+  --color-accent: hsl(var(--accent)); --color-accent-foreground: hsl(var(--accent-foreground)); --color-accent-border: hsl(var(--accent));
+  --color-destructive: hsl(var(--destructive)); --color-destructive-foreground: hsl(var(--destructive-foreground)); --color-destructive-border: hsl(var(--destructive));
+  --font-sans: var(--app-font-sans); --font-serif: var(--app-font-serif); --font-mono: var(--app-font-mono);
+  --radius-sm: calc(var(--radius) - 4px); --radius-md: calc(var(--radius) - 2px); --radius-lg: var(--radius); --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  --background: 196 57% 97%; --foreground: 204 26% 13%; --border: 196 30% 86%;
+  --card: 0 0% 100%; --card-foreground: 204 26% 13%; --card-border: 196 28% 87%;
+  --sidebar: 204 29% 16%; --sidebar-foreground: 196 57% 97%; --sidebar-border: 204 24% 25%;
+  --popover: 0 0% 100%; --popover-foreground: 204 26% 13%; --popover-border: 196 28% 87%;
+  --primary: 28 100% 55%; --primary-foreground: 204 29% 16%;
+  --secondary: 195 67% 88%; --secondary-foreground: 204 29% 16%;
+  --muted: 196 31% 92%; --muted-foreground: 202 15% 43%;
+  --accent: 190 77% 41%; --accent-foreground: 0 0% 100%;
+  --destructive: 2 73% 49%; --destructive-foreground: 0 0% 100%;
+  --input: 196 25% 82%; --ring: 28 100% 55%;
+  --app-font-sans: 'IBM Plex Sans Arabic', 'Cairo', sans-serif; --app-font-serif: 'Cairo', sans-serif; --app-font-mono: 'IBM Plex Sans Arabic', monospace;
+  --radius: .85rem; --shadow-sm: 0 8px 24px hsl(204 29% 16% / .07); --shadow: 0 12px 35px hsl(204 29% 16% / .09); --shadow-md: 0 18px 42px hsl(204 29% 16% / .12); --shadow-lg: 0 24px 65px hsl(204 29% 16% / .15);
+  --elevate-1: rgba(0,0,0,.03); --elevate-2: rgba(0,0,0,.08); --opaque-button-border-intensity: -8;
+}
+.dark { --background: 204 29% 12%; --foreground: 196 57% 97%; --border: 204 24% 25%; --card: 204 29% 16%; --card-foreground: 196 57% 97%; --card-border: 204 24% 25%; --sidebar: 204 29% 10%; --sidebar-foreground: 196 57% 97%; --sidebar-border: 204 24% 20%; --popover: 204 29% 16%; --popover-foreground: 196 57% 97%; --popover-border: 204 24% 25%; --primary: 28 100% 55%; --primary-foreground: 204 29% 12%; --secondary: 204 22% 24%; --secondary-foreground: 196 57% 97%; --muted: 204 22% 22%; --muted-foreground: 196 23% 71%; --accent: 190 77% 41%; --accent-foreground: 0 0% 100%; --destructive: 2 73% 55%; --destructive-foreground: 0 0% 100%; --input: 204 24% 29%; --ring: 28 100% 55%; --elevate-1: rgba(255,255,255,.04); --elevate-2: rgba(255,255,255,.09); --opaque-button-border-intensity: 9; }
+
+@layer base {
+  * { @apply border-border; }
+  body { @apply font-sans antialiased bg-background text-foreground; direction: rtl; min-width: 320px; }
+}
+@layer utilities {
+  .font-display { font-family: var(--app-font-serif); }
+  .text-balance { text-wrap: balance; }
+  .we-section { max-width: 1180px; margin-inline: auto; padding-inline: 1.25rem; }
+  .surface-grid { background-image: linear-gradient(hsl(var(--foreground) / .035) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground) / .035) 1px, transparent 1px); background-size: 28px 28px; }
+  .safe-bottom { padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
+}
+@keyframes rise-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes pulse-soft { 0%,100% { opacity: .55; } 50% { opacity: 1; } }
+.animate-rise { animation: rise-in .55s cubic-bezier(.2,.8,.2,1) both; } .animate-rise-2 { animation: rise-in .55s .09s cubic-bezier(.2,.8,.2,1) both; } .animate-rise-3 { animation: rise-in .55s .18s cubic-bezier(.2,.8,.2,1) both; }
+.skeleton { background: linear-gradient(90deg, hsl(var(--muted)) 25%, hsl(var(--secondary)) 50%, hsl(var(--muted)) 75%); background-size: 200% 100%; animation: pulse-soft 1.3s ease-in-out infinite; }
+button, a, input, select { transition: background-color .2s ease, border-color .2s ease, color .2s ease, transform .2s ease, box-shadow .2s ease, opacity .2s ease; }
+button:active:not(:disabled), a:active { transform: translateY(1px); }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid hsl(var(--primary) / .35); outline-offset: 2px; }
+.search-field { display: flex; min-height: 58px; flex-direction: column; justify-content: center; gap: 1px; border-radius: .75rem; background: hsl(var(--muted) / .6); padding: .45rem .8rem; }
+.search-field span, .field-label { font-size: .72rem; font-weight: 700; color: hsl(var(--muted-foreground)); }
+.search-field svg { float: right; margin-left: .4rem; color: hsl(var(--accent)); }
+.search-field select, .search-field input { width: 100%; border: 0; background: transparent; padding: 0; font: inherit; font-size: .88rem; font-weight: 700; color: hsl(var(--foreground)); outline: none; }
+.field-label { display: block; }
+.field-label input { display: block; width: 100%; margin-top: .45rem; border: 1px solid hsl(var(--input)); border-radius: .65rem; background: hsl(var(--muted) / .35); padding: .75rem .85rem; color: hsl(var(--foreground)); font: inherit; font-size: .9rem; font-weight: 600; outline: none; }
+.field-label input:focus { border-color: hsl(var(--primary)); background: hsl(var(--card)); }
+.seat { display: flex; height: 43px; align-items: center; justify-content: center; border: 1px solid hsl(var(--border)); border-radius: .7rem .7rem .5rem .5rem; background: hsl(var(--card)); color: hsl(var(--foreground)); font-size: .8rem; font-weight: 800; }
+.seat.available:hover { border-color: hsl(var(--primary)); background: hsl(var(--primary) / .12); }
+.seat.booked, .seat.held, .seat.disabled { cursor: not-allowed; background: hsl(var(--muted)); color: hsl(var(--muted-foreground) / .5); }
+.seat.selected { border-color: hsl(var(--primary)); background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); box-shadow: 0 4px 10px hsl(var(--primary) / .28); }
+.seat-dot { display: inline-block; width: 9px; height: 9px; margin-left: 3px; border: 1px solid hsl(var(--border)); border-radius: 3px; background: hsl(var(--card)); vertical-align: -1px; }
+.seat-dot.selected { border-color: hsl(var(--primary)); background: hsl(var(--primary)); }
+.seat-dot.booked { background: hsl(var(--muted)); }
+.pickup-option, .payment-option { display: flex; width: 100%; align-items: center; gap: .75rem; border: 1px solid hsl(var(--border)); border-radius: .8rem; background: hsl(var(--card)); padding: .85rem; text-align: right; color: hsl(var(--foreground)); }
+.pickup-option:hover, .payment-option:hover, .pickup-option.active, .payment-option.active { border-color: hsl(var(--primary)); background: hsl(var(--primary) / .08); }
+.pickup-option svg { color: hsl(var(--accent)); }
+.pickup-option span { display: flex; flex-direction: column; gap: .2rem; }
+.pickup-option small { color: hsl(var(--muted-foreground)); font-size: .7rem; font-weight: 500; }
+.payment-mark { display: flex; height: 30px; width: 30px; align-items: center; justify-content: center; border-radius: .45rem; color: white; font-weight: 800; }
+@media (max-width: 767px) { .search-field { min-height: 54px; } }

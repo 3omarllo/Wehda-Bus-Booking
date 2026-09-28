@@ -3,13 +3,17 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Wehda Bus Booking API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: customer
+    description: Customer booking operations
+  - name: staff
+    description: Staff operations
 paths:
   /healthz:
     get:
@@ -24,7 +28,171 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /trips:
+    get:
+      operationId: listTrips
+      tags: [customer]
+      summary: List available trips
+      parameters:
+        - $ref: "#/components/parameters/From"
+        - $ref: "#/components/parameters/To"
+        - $ref: "#/components/parameters/Date"
+        - name: passengers
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 4, default: 1 }
+      responses:
+        "200":
+          description: Available trips
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Trip" }
+  /trips/{tripId}/seats:
+    get:
+      operationId: getTripSeats
+      tags: [customer]
+      summary: Get live seat states
+      parameters:
+        - $ref: "#/components/parameters/TripId"
+      responses:
+        "200":
+          description: Seat map
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SeatMap"
+  /bookings/hold:
+    post:
+      operationId: holdBooking
+      tags: [customer]
+      summary: Hold seats for checkout
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookingHoldInput"
+      responses:
+        "201":
+          description: Booking hold
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+  /bookings/{bookingId}/payment:
+    post:
+      operationId: submitPayment
+      tags: [customer]
+      summary: Submit a manual payment proof
+      parameters:
+        - $ref: "#/components/parameters/BookingId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PaymentInput"
+      responses:
+        "200":
+          description: Payment review state
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+  /bookings/{reference}:
+    get:
+      operationId: getBooking
+      tags: [customer]
+      summary: Get a ticket by reference
+      parameters:
+        - name: reference
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Booking ticket
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+  /staff/dashboard:
+    get:
+      operationId: getStaffDashboard
+      tags: [staff]
+      summary: Get operations dashboard
+      responses:
+        "200":
+          description: Staff dashboard metrics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StaffDashboard"
+  /staff/bookings:
+    get:
+      operationId: listStaffBookings
+      tags: [staff]
+      summary: List bookings for staff
+      parameters:
+        - name: status
+          in: query
+          schema: { type: string }
+        - name: search
+          in: query
+          schema: { type: string }
+      responses:
+        "200":
+          description: Staff bookings
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Booking" }
+  /staff/bookings/{bookingId}/review:
+    post:
+      operationId: reviewBookingPayment
+      tags: [staff]
+      summary: Approve or reject a payment
+      parameters:
+        - $ref: "#/components/parameters/BookingId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReviewInput"
+      responses:
+        "200":
+          description: Updated booking
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
 components:
+  parameters:
+    TripId:
+      name: tripId
+      in: path
+      required: true
+      schema: { type: integer }
+    BookingId:
+      name: bookingId
+      in: path
+      required: true
+      schema: { type: integer }
+    From:
+      name: from
+      in: query
+      schema: { type: string, default: Cairo }
+    To:
+      name: to
+      in: query
+      schema: { type: string, default: Alexandria }
+    Date:
+      name: date
+      in: query
+      schema: { type: string }
   schemas:
     HealthStatus:
       type: object
@@ -33,4 +201,126 @@ components:
           type: string
       required:
         - status
+    Trip:
+      type: object
+      required: [id, from, to, departure, arrival, duration, busType, price, seatsLeft, totalSeats, status, amenities]
+      properties:
+        id: { type: integer }
+        from: { type: string }
+        to: { type: string }
+        fromStation: { type: string }
+        toStation: { type: string }
+        departure: { type: string }
+        arrival: { type: string }
+        duration: { type: string }
+        busType: { type: string }
+        price: { type: number }
+        seatsLeft: { type: integer }
+        totalSeats: { type: integer }
+        status: { type: string }
+        amenities:
+          type: array
+          items: { type: string }
+    Seat:
+      type: object
+      required: [number, state]
+      properties:
+        number: { type: integer }
+        state: { type: string, enum: [available, booked, held, disabled] }
+        passengerName: { type: ["string", "null"] }
+    SeatMap:
+      type: object
+      required: [tripId, rows, seats]
+      properties:
+        tripId: { type: integer }
+        rows: { type: integer }
+        seats:
+          type: array
+          items: { $ref: "#/components/schemas/Seat" }
+    BookingHoldInput:
+      type: object
+      required: [tripId, seats, passengerName, passengerPhone, pickupType]
+      properties:
+        tripId: { type: integer }
+        seats:
+          type: array
+          minItems: 1
+          maxItems: 4
+          items: { type: integer }
+        passengerName: { type: string, minLength: 2 }
+        passengerPhone: { type: string, pattern: "^01[0-9]{9}$" }
+        pickupType: { type: string }
+        pickupPoint: { type: ["string", "null"] }
+        waitMinutes: { type: integer, default: 0 }
+    PaymentInput:
+      type: object
+      required: [method, transactionRef, senderPhone]
+      properties:
+        method: { type: string, enum: [vodafone_cash, instapay] }
+        transactionRef: { type: string, minLength: 3 }
+        senderPhone: { type: string }
+    ReviewInput:
+      type: object
+      required: [decision]
+      properties:
+        decision: { type: string, enum: [approve, reject] }
+        reason: { type: ["string", "null"] }
+    Booking:
+      type: object
+      required: [id, reference, status, paymentStatus, total, seats, trip, customer]
+      properties:
+        id: { type: integer }
+        reference: { type: string }
+        status: { type: string }
+        paymentStatus: { type: string }
+        total: { type: number }
+        pickupFee: { type: number }
+        pickupType: { type: string }
+        createdAt: { type: string }
+        expiresAt: { type: string }
+        seats:
+          type: array
+          items: { type: integer }
+        trip: { $ref: "#/components/schemas/Trip" }
+        customer:
+          type: object
+          required: [name, phone]
+          properties:
+            name: { type: string }
+            phone: { type: string }
+        passengers:
+          type: array
+          items:
+            type: object
+            required: [name, seat]
+            properties:
+              name: { type: string }
+              seat: { type: integer }
+    StaffDashboard:
+      type: object
+      required: [todayTrips, newBookings, pendingPayments, pendingPickups, freeSeats, todayRevenue, attention, revenue]
+      properties:
+        todayTrips: { type: integer }
+        newBookings: { type: integer }
+        pendingPayments: { type: integer }
+        pendingPickups: { type: integer }
+        freeSeats: { type: integer }
+        todayRevenue: { type: number }
+        attention:
+          type: array
+          items:
+            type: object
+            required: [title, subtitle, tone]
+            properties:
+              title: { type: string }
+              subtitle: { type: string }
+              tone: { type: string }
+        revenue:
+          type: array
+          items:
+            type: object
+            required: [label, value]
+            properties:
+              label: { type: string }
+              value: { type: number }
 
